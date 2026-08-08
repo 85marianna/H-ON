@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H-ON - 엑셀VBA & 매크로 자동화</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #e5e7eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .star {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .navbar {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link {
+            color: #d1d5db;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        .hero-text {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        /* H-ON Hero visual */
+        .hero-visual {
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .hero-visual::before {
+            content: "";
+            position: absolute;
+            width: 430px;
+            height: 430px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle,
+                rgba(255, 184, 72, 0.18) 0%,
+                rgba(255, 184, 72, 0.08) 35%,
+                rgba(255, 184, 72, 0) 72%
+            );
+            filter: blur(8px);
+            z-index: 0;
+        }
+
+        .hero-visual img {
+            position: relative;
+            z-index: 1;
+            width: min(620px, 125%);
+            max-width: none;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 24px 45px rgba(0, 0, 0, 0.55));
+            transform: translateX(4%);
+        }
+
+        @media (max-width: 1024px) {
+            .hero-visual {
+                min-height: 430px;
+            }
+
+            .hero-visual img {
+                width: min(560px, 110%);
+                transform: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-visual {
+                min-height: 360px;
+                margin-top: 10px;
+            }
+
+            .hero-visual img {
+                width: 100%;
+                max-width: 520px;
+            }
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .date-badge {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            .hero-text {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* HOME 섹션만 첫 로딩 시와 동일한 간격 유지 */
+        #home {
+            scroll-margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 배경 별 -->
+    <div id="stars"></div>
+
+    <!-- 네비게이션 -->
+    <nav class="navbar sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold">H-ON</div>
+            <div class="hidden md:flex gap-8">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#projects" class="nav-link">프로젝트</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <a href="https://github.com" target="_blank" class="nav-link">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 히어로 섹션 -->
+    <section id="home" class="max-w-6xl mx-auto px-6 py-20 lg:py-32">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="hero-text mb-6">
+                    우리가 만드는 시스템,<br>가치를 켜다.
+                </div>
+                <p class="text-lg text-gray-400 mb-4">
+                    밤이 깊을수록 빛나는 올빼미의 작업실.
+                </p>
+                <p class="text-gray-500 mb-8">
+                    더 편리한 업무 환경을 위한<br>
+                    작은 도전은 계속 됩니다.
+                </p>
+                <div class="flex gap-4">
+                    <a href="#projects" class="btn-primary">
+                        프로젝트 보기 →
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <img src="올빼미.png" alt="올빼미와 순이, 램프가 있는 H-ON 일러스트" />
+            </div>
+        </div>
+    </section>
+
+    <!-- 프로젝트 섹션 -->
+    <section id="projects" class="max-w-6xl mx-auto px-6 py-20">
+        <h2 class="text-3xl font-bold mb-12">프로젝트</h2>
+        <div id="projects-container" class="space-y-6">
+            <!-- JavaScript에서 동적으로 생성됨 -->
+        </div>
+    </section>
+
+    <!-- About 섹션 -->
+    <section id="about" class="max-w-6xl mx-auto px-6 py-20">
+        <h2 class="text-3xl font-bold mb-8">주경야코(晝經夜Code)에 대해</h2>
+        <div class="project-card">
+            <p class="text-gray-400 leading-relaxed mb-4">
+                '주경야독'이라는 사자성어를 아시죠?
+                낮에는 밭을 갈고, 밤에는 책을 읽는다.
+            </p>
+            <p class="text-gray-400 leading-relaxed">
+                저 올빼미는 "낮에는 경리일을 하고, 밤에는 코딩을 공부한다" 라는 의미로
+                제 프로젝트명을 주경야코(晝經夜Code)라 지었습니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact 섹션 -->
+    <section id="contact" class="max-w-6xl mx-auto px-6 py-20 pb-32">
+        <h2 class="text-3xl font-bold mb-8">연락처</h2>
+        <div class="project-card">
+            <p class="text-gray-400 mb-4">
+                문의가 있으신가요? 언제든지 연락주세요. 🦉
+            </p>
+            <p class="text-gray-300">📧 이메일: hyejung.jo@afk.agc.com</p>
+        </div>
+    </section>
+
+    <script>
+        // 배경 별 생성
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.opacity = Math.random() * 0.7;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // 프로젝트 데이터
+        const projects = [
+            {
+                id: 1,
+                title: 'H-ON Accounting System',
+                description: 'VBA와 ACCESS 기반의 통합 회계 관리 시스템. 매출/매입 관리, 결산 처리, 재무 보고서 자동 생성 기능 포함.',
+                date: '2026.04.30',
+                tech: ['VBA', 'ACCESS', '엑셀'],
+                downloadUrl: '#',
+                version: 'v1.0.0'
+            },
+            {
+                id: 2,
+                title: 'H-On Macro Project 1. 공통비 대체',
+                description: '공통원가에 해당하는 비용을 일반관리비로 대체하는 업로드 파일과 내역을 자동 생성',
+                date: '2026.08.01',
+                tech: ['VBA', '엑셀'],
+                downloadUrl: '#',
+                version: 'v1.0.0'
+            },
+            {
+                id: 3,
+                title: 'H-On Macro Project 2. 휴지비 대체',
+                description: '휴지비를 영업외비용으로 대체하는 업로드 파일과 누적집계표를 자동 생성',
+                date: '2026.08.01',
+                tech: ['VBA', '엑셀'],
+                downloadUrl: '#',
+                version: 'v1.0.0'
+            }
+        ];
+
+        // 프로젝트 렌더링
+        function renderProjects() {
+            const container = document.getElementById('projects-container');
+            container.innerHTML = projects.map(project => `
+                <div class="project-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">${project.title}</h3>
+                            <p class="text-gray-400 mb-4">${project.description}</p>
+                        </div>
+                        <span class="date-badge">${project.date}</span>
+                    </div>
+
+                    <div class="flex gap-2 mb-4">
+                        ${project.tech.map(t => `
+                            <span class="px-3 py-1 bg-gray-700 bg-opacity-50 rounded-full text-sm">
+                                ${t}
+                            </span>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex gap-3">
+                        <a href="${project.downloadUrl}" class="btn-primary">
+                            다운로드 ${project.version} →
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 초기화
+        createStars();
+        renderProjects();
+    </script>
+
+    <!-- 푸터 -->
+    <footer class="py-10 px-6 text-center border-t border-gray-700">
+        <p class="text-gray-400 text-sm">© 2026 H-ON. All rights reserved.</p>
+    </footer>
+</body>
+</html>

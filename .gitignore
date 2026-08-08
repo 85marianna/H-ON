@@ -1,0 +1,37 @@
+# OS 파일
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE 설정
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 환경 변수
+.env
+.env.local
+.env.*.local
+
+# 로그 파일
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 의존성
+node_modules/
+package-lock.json
+yarn.lock
+
+# 빌드 결과
+dist/
+build/
+.cache/
+
+# 기타
+.DS_Store
+*.bak
