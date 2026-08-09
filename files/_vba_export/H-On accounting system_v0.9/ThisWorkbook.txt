@@ -1,0 +1,142 @@
+﻿
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+
+    'sht전표.Range("B2,B5,D5,F5,G5,C8:G17").ClearContents
+
+    ' 시스템 모드로 전환
+    Dim ws As Worksheet
+    For Each ws In ThisWorkbook.Worksheets
+        If ws.Name = "MAIN" Then
+            ws.Visible = xlSheetVisible
+        Else
+            ws.Visible = xlSheetVeryHidden
+        End If
+    Next ws
+    
+    With ThisWorkbook.Sheets("MAIN")
+        .Protect Password:=ADMIN_PW, UserInterfaceOnly:=True
+        .EnableSelection = xlNoSelection
+        .ScrollArea = "A1:J20"
+    End With
+
+End Sub
+
+
+Private Sub Workbook_Open()
+
+    Dim ws As Worksheet
+    Dim wsLock As Variant
+    Dim arrLockSheets As Variant
+    
+
+    ' 1. 이 파일 활성화 & MAIN 시트로 이동
+    ThisWorkbook.Activate
+    ThisWorkbook.Sheets("MAIN").Activate
+
+    ' 2. 모든 시트 숨기기 (MAIN 제외)
+    For Each ws In ThisWorkbook.Worksheets
+        If ws.Name = "MAIN" Then
+            ws.Visible = xlSheetVisible
+        Else
+            ws.Visible = xlSheetVeryHidden
+        End If
+    Next ws
+
+    ' 3. MAIN 시트 UI 설정
+    With ThisWorkbook.Sheets("MAIN")
+        .Unprotect Password:=ADMIN_PW
+        
+        .Range("A1").Value = " 한국전기초자(주)"
+        .Range("J1").Value = "ⓒ 2026 H-ON. Version.1.0.0 "
+        .Range("J1").HorizontalAlignment = xlRight
+        
+        .Protect Password:=ADMIN_PW, UserInterfaceOnly:=True
+        .EnableSelection = xlNoSelection
+        .ScrollArea = "A1:J20"
+    End With
+
+'    ' 4. 수정 금지 대상 시트 보호 (보고서/출력용)  --> 시트 보호하고픈 시트 추가하면 됨!!
+'    arrLockSheets = Array(sht삭제백업)
+'
+'    For Each wsLock In arrLockSheets
+'        With wsLock
+'            .Protect Password:=ADMIN_PW, UserInterfaceOnly:=True
+'            .EnableSelection = xlNoSelection
+'        End With
+'    Next wsLock
+
+End Sub
+
+
+
+
+''
+''' 파일을 딱 처음 열 때 실행되는 메인 세팅
+''Private Sub Workbook_Open()
+''    ' 0. 이 회계 파일이 무조건 맨 앞으로 오게 활성화!
+''    ThisWorkbook.Activate
+''    ThisWorkbook.Sheets("MAIN").Activate
+''
+''    '  에러 무시 시작 (창 크기 조절 시 충돌 방지)
+''    On Error Resume Next
+''
+''    '  2. 창 크기 강제 세팅
+''    Application.Width = 800  ' 가로 사이즈
+''    Application.Height = 450 ' 세로 사이즈
+''
+''
+''    '  정상 모드로 복구
+''    On Error GoTo 0
+''
+''    ' 4. 리본 메뉴 숨기기
+''    Application.ExecuteExcel4Macro "SHOW.TOOLBAR(""Ribbon"", False)"
+''
+''    ' 5. F1 셀에 접속자 이름 띄우기 (비밀번호 풀고 쓰기!)
+''    With ThisWorkbook.Sheets("MAIN")
+''        .Unprotect Password:=ADMIN_PW
+''        .Range("I1").Value = Application.UserName & " 님 환영합니다!"
+''        .Protect Password:=ADMIN_PW, UserInterfaceOnly:=True
+''        .EnableSelection = xlNoSelection ' 셀 클릭 완벽 차단
+''    End With
+''
+''    ' 6. 엑셀의 모든 껍데기(눈금선, 스크롤바 등) 다 숨기기
+''    ActiveWindow.DisplayGridlines = False
+''    ActiveWindow.DisplayHeadings = False
+''    Application.DisplayFormulaBar = False
+''    ActiveWindow.DisplayHorizontalScrollBar = False
+''    ActiveWindow.DisplayVerticalScrollBar = False
+''    ActiveWindow.DisplayWorkbookTabs = False
+''    Application.DisplayStatusBar = False
+''
+''    ' 7. 마우스 휠 스크롤 범위 제한
+''    ActiveSheet.ScrollArea = "A1:K25"
+''
+''
+''    frmMain.Show
+''
+''
+''End Sub
+
+
+
+''피벗 삭제 못하게 오른쪽마우스 메뉴 금지
+'Private Sub Workbook_SheetBeforeRightClick(ByVal Sh As Object, ByVal Target As Range, Cancel As Boolean)
+'    Dim pt As PivotTable
+'    Dim wsNames As Variant
+'    wsNames = Array("총계정원장", "계정명세") ' 보호할 시트 이름
+'
+'    If IsError(Application.Match(Sh.Name, wsNames, 0)) Then Exit Sub
+'
+'    On Error Resume Next
+'    Set pt = Sh.PivotTables(1)
+'    On Error GoTo 0
+'
+'    If Not pt Is Nothing Then
+'        If Not Intersect(Target, pt.TableRange2) Is Nothing Then
+'            MsgBox "이 피벗테이블은 삭제할 수 없습니다."
+'            Cancel = True
+'        End If
+'    End If
+'End Sub
+
+
